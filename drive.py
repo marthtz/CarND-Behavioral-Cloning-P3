@@ -61,6 +61,12 @@ def telemetry(sid, data):
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         image_array = np.asarray(image)
+
+        h, w, d = image_array.shape
+        cropTop = 50
+        cropBot = 25
+        image_array = image_array[cropTop:h-cropBot, :, :]
+
         steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
 
         throttle = controller.update(float(speed))
@@ -119,6 +125,7 @@ if __name__ == '__main__':
         print('You are using Keras version ', keras_version,
               ', but the model was built using ', model_version)
 
+    print(args.model)
     model = load_model(args.model)
 
     if args.image_folder != '':
